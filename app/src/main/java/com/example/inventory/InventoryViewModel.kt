@@ -69,6 +69,11 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
             quantityInStock = itemCount.toInt()
         )
     }
+
+    //fonction pour récupérer les détals des éléments de la bdd en fonction de l'élément id
+    fun retrieveItem(id : Int): LiveData<Item>{
+        return itemDao.getItem(id).asLiveData()
+    }
 }
 
 /**

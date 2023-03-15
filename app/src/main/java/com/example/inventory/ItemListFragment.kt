@@ -51,7 +51,10 @@ class ItemListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //Initialisation e la nvlle propriété à l'aide du constructeur par défaut Item..
+        // aide à cliquer s/ les item et avoir les détails
         val adapter = ItemListAdapter{
+            val action = ItemListFragmentDirections.actionItemListFragmentToItemDetailFragment(it.id)
+            this.findNavController().navigate(action)
         }
         //liaison de la propriéte avec recyclerview:
         binding.recyclerView.adapter=adapter
@@ -59,6 +62,7 @@ class ItemListFragment : Fragment() {
         //Cette opération met à jour le RecyclerView avec les nouveaux éléments de la liste.
         viewModel.allItems.observe(this.viewLifecycleOwner){
                 items -> items.let { adapter.submitList(it) }
+
         }
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
