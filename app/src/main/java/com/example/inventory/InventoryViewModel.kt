@@ -19,6 +19,7 @@
 package com.example.inventory
 
 import androidx.lifecycle.*
+import androidx.room.util.copy
 import com.example.inventory.data.Item
 import com.example.inventory.data.ItemDao
 import kotlinx.coroutines.launch
@@ -73,6 +74,23 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
     //fonction pour récupérer les détals des éléments de la bdd en fonction de l'élément id
     fun retrieveItem(id : Int): LiveData<Item>{
         return itemDao.getItem(id).asLiveData()
+    }
+
+    //FONCTON QUI Reçoit une instance de la classe d'entité item
+    private fun updateItem(item :Item){
+        //appel de la méthode
+        viewModelScope.launch {
+            itemDao.update(item)
+        }
+    }
+
+    //fonction qui reçoit une instance de la classe d'entités item
+    fun sellItem(item: Item){
+        //condition pour vérifier si la valeur est sup...
+        if (item.quantityInStock>0){
+            val  newItem = item.copy(quantityInStock =  item.quantityInStock -1)
+            updateItem(newItem)
+        }
     }
 }
 
