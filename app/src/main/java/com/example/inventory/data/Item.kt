@@ -20,6 +20,7 @@ package com.example.inventory.data
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.text.NumberFormat
 
 /**
  * Entity data class represents a single row in the database.
@@ -35,3 +36,6 @@ data class Item(
     @ColumnInfo(name = "quantity")
     val quantityInStock: Int,
 )
+
+//Fonction pour formater le prix
+fun Item.getFormattedPrice():String = NumberFormat.getCurrencyInstance().format(itemPrice)
