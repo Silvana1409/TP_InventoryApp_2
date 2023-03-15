@@ -92,6 +92,10 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
             updateItem(newItem)
         }
     }
+
+    fun isStockAvailable(item: Item): Boolean{
+        return item.quantityInStock >0
+    }
 }
 
 /**
