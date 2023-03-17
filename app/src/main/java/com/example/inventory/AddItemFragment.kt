@@ -23,12 +23,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.inventory.data.Item
 import com.example.inventory.databinding.FragmentAddItemBinding
+import kotlinx.coroutines.selects.select
 
 /**
  * Fragment to add or update an item in the Inventory database.
@@ -95,8 +97,19 @@ class AddItemFragment : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.saveAction.setOnClickListener {
-            addNewItem()
+        val id = navigationArgs.itemId
+        if (id>0){
+            viewModel.retrieveItem(id).observe(this.viewLifecycleOwner){
+                selectedItem -> item =selectedItem
+                bind(item)
+            }
+        }
+        else{
+            binding.saveAction.setOnClickListener {
+                addNewItem()
+
+            }
+
         }
     }
 
@@ -110,5 +123,32 @@ class AddItemFragment : Fragment() {
             InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
         _binding = null
+    }
+    //fonction pour lier les champs de texte avec les détails de l'entité
+    private fun bind(item: Item){
+        //arrondi az deuxieme decimale
+        val price = "%.2f".format(item.itemPrice)
+        binding.apply {
+            itemName.setText(item.itemName, TextView.BufferType.SPANNABLE)
+            itemPrice.setText(price,TextView.BufferType.SPANNABLE)
+            itemCount.setText(item.quantityInStock.toString(),TextView.BufferType.SPANNABLE)
+
+            saveAction.setOnClickListener{
+                updateItem()
+            }
+        }
+    }
+
+    private fun updateItem(){
+        if (isEntryValid()){
+            viewModel.updateItem(
+                this.navigationArgs.itemId,
+                this.binding.itemName.text.toString(),
+                this.binding.itemPrice.text.toString(),
+                this.binding.itemCount.text.toString(),
+            )
+            val action=AddItemFragmentDirections.actionAddItemFragmentToItemListFragment()
+            findNavController().navigate(action)
+        }
     }
 }
